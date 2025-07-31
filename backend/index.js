@@ -10,5 +10,13 @@ app.use(express.json());
 app.use('/api/auth', authRoutes); 
 
 
+mongoose.connect(process.env.MONGO_URl)
+.then( ()  => { 
+    app.listen(5000,()  =>  console.log('Server is running on http://localhost:5000')); 
+})
+.catch(err =>  console.log(err));
+
+
+
 
 
