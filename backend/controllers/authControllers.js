@@ -1,6 +1,8 @@
 
 const User = require('../model/User');
 const bcrypt = require('bcryptjs');
+const sendEmail = require('../utils/sendEmail');
+const generateOTP = require('../utils/generateOTP');
 
 
 //  helper :generate 6-digit OTP
@@ -28,7 +30,7 @@ exports.register = async (req, res) => {
 
         // Simulate sending OTP via email /SMS
         console.log(`🔐 OTP for  ${email}:${otp}`);
-        
+          await sendEmail(email, 'Your OTP Code', `Your OTP is: ${otp}`);
         res.status(201).json({ message: "User registered successfully", user });
     } catch (err) {
         res.status(400).json({ error: err.message });
