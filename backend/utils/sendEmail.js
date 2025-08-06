@@ -1,4 +1,4 @@
-const  nodemailer = requir('nodemailer'); 
+const  nodemailer =  require('nodemailer'); 
 
 const sendEmail =  async (to, subject, text) => { 
     const transporter = nodemailer. createTransport({ 
