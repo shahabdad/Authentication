@@ -185,6 +185,7 @@
 // };
 
 
+import { SendVerificationCode } from '../middleware/Email';
 import Usermodel from '../model/User'; 
 import bcrypt from 'bcryptjs'; 
 
@@ -199,19 +200,41 @@ const  register = async (req, res)  => {
     if (ExistingUser) { 
         return res.status(400).json({ success: false, message: 'User already Exists  Please Login '});
     }
-     const hashedPassword  = await bcrypt.hash(password, 10)
+     const hashedPassword  = await bcrypt.hash(password, 10);
+   const verficationCode=   Math.floor(100000 + Math.random() * 900000).toString();  
      const user = await Usermodel.create({ 
         name,
         email,
-        password: hashedPassword 
+        password: hashedPassword, 
+        verficationCode 
      })
      await user.save(); 
+     SendVerificationCode(user.email.verficationCode )
      return res.status(200).json({ success: true, message: 'User Registered Successfully',user });
     } catch ( err){ 
         console.error(err); 
         return res.status(500).json({ success: false, message: ' internal Server error' });
-     
+    
     }
 }
 
-export { register}; 
+
+const   VerfiyEmail =  async(req,res) => { 
+    try{
+         const {code} = req.body 
+         const user = await Usermodel.findOne({ 
+            verficationCode:code
+         })
+        if (!user){ 
+            return res.status(400).json({success:false,message:"Invalid  or Expired Code"})
+        }
+        user.isVerified = ture,
+       user.verficationCode = undefined;    
+        await user.save() 
+    } catch (error) { 
+           console.error(err); 
+        return res.status(500).json({ success: false, message: ' internal Server error' });
+    }
+}
+
+export { register,VerfiyEmail}; 
