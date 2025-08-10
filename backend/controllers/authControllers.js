@@ -185,7 +185,7 @@
 // };
 
 
-import { SendVerificationCode } from '../middleware/Email';
+import { SendVerificationCode, WelcomeEmail } from '../middleware/Email';
 import Usermodel from '../model/User'; 
 import bcrypt from 'bcryptjs'; 
 
@@ -231,6 +231,8 @@ const   VerfiyEmail =  async(req,res) => {
         user.isVerified = ture,
        user.verficationCode = undefined;    
         await user.save() 
+        await WelcomeEmail(user.email,user.name )
+        return res.status(200).json({success:true,message:"Email verifed SuccessFully"})
     } catch (error) { 
            console.error(err); 
         return res.status(500).json({ success: false, message: ' internal Server error' });
