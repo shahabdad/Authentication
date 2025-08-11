@@ -1,7 +1,7 @@
 import transporter from './Email.confiq.js';
 import { Verification_Email_Template, Welcome_Email_Template } from './EmailTemplate.js';
 
-export const SendVerificationEmail = async (email, verficationCode) => {
+export const  sendVerificationEamil = async (email, verficationCode) => {
   try {
     const response = await transporter.sendMail({
       from: '"NEwCoDer" <shahabdad50@gmail.com>',

@@ -242,14 +242,14 @@
 // export { register, VerfiyEmail }; 
 
 
-import { SendVerificationEmail, WelcomeEmail   } from "../middlewares/Email.js"
+import { sendVerificationEamil,  WelcomeEmail } from "../middlewares/Email.js"
 import { generateTokenAndSetCookies } from "../middlewares/GenerateToken.js"
 // import { Usermodel } from "../models/User"
-import { Usermodel } from "../model/User.js";
+import { Usermodel } from "../model/Suer.js";
 
 import bcryptjs from 'bcryptjs'
 
-const Reigster=async(req,res)=>{
+const register=async(req,res)=>{
     try {
         const {email,password,name}=req.body
         if (!email || !password || !name) {
@@ -283,7 +283,7 @@ const Reigster=async(req,res)=>{
 
 const VerfiyEmail=async(req,res)=>{
     try {
-        const {code}=req.body 
+        const {code}=req.body ;
         const user= await Usermodel.findOne({
             verficationToken:code,
             verficationTokenExpiresAt:{$gt:Date.now()}
@@ -297,7 +297,7 @@ const VerfiyEmail=async(req,res)=>{
      user.verficationToken=undefined;
      user.verficationTokenExpiresAt=undefined;
      await user.save()
-     await senWelcomeEmail(user.email,user.name)
+     await WelcomeEmail(user.email,user.name)
      return res.status(200).json({success:true,message:"Email Verifed Successfully"})
            
     } catch (error) {
@@ -306,4 +306,4 @@ const VerfiyEmail=async(req,res)=>{
     }
 }
 
-export {Reigster,VerfiyEmail}
+export {register,VerfiyEmail}
