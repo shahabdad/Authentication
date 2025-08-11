@@ -22,5 +22,6 @@ import { register, VerfiyEmail } from '../controllers/authControllers.js'
 const AuthRoutes=express.Router()
 
 AuthRoutes.post('/register',register)
+
 AuthRoutes.post('/verifyEmail',VerfiyEmail)
 export default AuthRoutes

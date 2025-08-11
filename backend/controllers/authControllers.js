@@ -242,68 +242,120 @@
 // export { register, VerfiyEmail }; 
 
 
-import { sendVerificationEamil,  WelcomeEmail } from "../middlewares/Email.js"
+import { sendVerificationEamil, WelcomeEmail } from "../middlewares/Email.js"
 import { generateTokenAndSetCookies } from "../middlewares/GenerateToken.js"
 // import { Usermodel } from "../models/User"
-import { Usermodel } from "../model/Suer.js";
+import { Usermodel } from "../model/User.js";
 
 import bcryptjs from 'bcryptjs'
 
-const register=async(req,res)=>{
+// const register=async(req,res)=>{
+//     try {
+//         const {email,password,name}=req.body
+
+//         if (!email || !password || !name) {
+//             return res.status(400).json({success:false,message:"All fields are required"})
+//         }
+//         const ExistsUser= await Usermodel.findOne({email})
+//         if (ExistsUser) {
+//             return res.status(400).json({success:false,message:"User Already Exists Please Login"})
+
+//         }
+//         const hasePassowrd= await bcryptjs.hashSync(password,10)
+//         const verficationToken= Math.floor(100000 + Math.random() * 900000).toString()
+//         const user= new Usermodel({
+//             email,
+//             password:hasePassowrd,
+//             name,
+//             verficationToken,
+//             verficationTokenExpiresAt:Date.now() + 24 * 60 * 60 * 1000
+//         })
+//         await user.save()
+//        generateTokenAndSetCookies(res,user._id)
+//        await sendVerificationEamil(user.email,verficationToken)
+//         return res.status(200).json({success:true,message:"User Register Successfully",user})
+//        console.log(req.body);
+
+
+//     } catch (error) {
+//         console.log(error)
+//         return res.status(400).json({success:false,message:"internal server error"})
+
+//     }
+// // }
+
+// import { sendVerificationEmail, WelcomeEmail } from "../middlewares/Email.js";
+// import { generateTokenAndSetCookies } from "../middlewares/GenerateToken.js";
+// import { Usermodel } from "../model/User.js";
+// import bcryptjs from "bcryptjs";
+
+const register = async (req, res) => {
     try {
-        const {email,password,name}=req.body
+        // console.log(req.body);
+         console.log("Incoming request body:", req.body);
+        // const { email, password, name } = req.body;
+
+        const { email, password, name } = req.body;
+
         if (!email || !password || !name) {
-            return res.status(400).json({success:false,message:"All fields are required"})
+            return res.status(400).json({ success: false, message: "All fields are required" });
+            console.log(req.body);
         }
-        const ExistsUser= await Usermodel.findOne({email})
-        if (ExistsUser) {
-            return res.status(400).json({success:false,message:"User Already Exists Please Login"})
-            
+
+        const existingUser = await Usermodel.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "User already exists, please login" });
         }
-        const hasePassowrd= await bcryptjs.hashSync(password,10)
-        const verficationToken= Math.floor(100000 + Math.random() * 900000).toString()
-        const user= new Usermodel({
+
+        const hashedPassword = await bcryptjs.hash(password, 10);
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+        const user = new Usermodel({
             email,
-            password:hasePassowrd,
+            password: hashedPassword,
             name,
-            verficationToken,
-            verficationTokenExpiresAt:Date.now() + 24 * 60 * 60 * 1000
-        })
-        await user.save()
-       generateTokenAndSetCookies(res,user._id)
-       await sendVerificationEamil(user.email,verficationToken)
-        return res.status(200).json({success:true,message:"User Register Successfully",user})
+            verificationToken,
+            verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000
+        });
 
+        await user.save();
+
+        generateTokenAndSetCookies(res, user._id);
+        await sendVerificationEamil(user.email, verificationToken);
+
+        return res.status(200).json({ success: true, message: "User registered successfully", user });
     } catch (error) {
-        console.log(error)
-        return res.status(400).json({success:false,message:"internal server error"})
-        
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+};
 
-const VerfiyEmail=async(req,res)=>{
+
+
+const VerfiyEmail = async (req, res) => {
     try {
-        const {code}=req.body ;
-        const user= await Usermodel.findOne({
-            verficationToken:code,
-            verficationTokenExpiresAt:{$gt:Date.now()}
+        const { code } = req.body;
+        console.log()
+        const user = await Usermodel.findOne({
+            verficationToken: code,
+            verficationTokenExpiresAt: { $gt: Date.now() }
         })
         if (!user) {
-            return res.status(400).json({success:false,message:"Inavlid or Expired Code"})
-                
-            }
-          
-     user.isVerified=true;
-     user.verficationToken=undefined;
-     user.verficationTokenExpiresAt=undefined;
-     await user.save()
-     await WelcomeEmail(user.email,user.name)
-     return res.status(200).json({success:true,message:"Email Verifed Successfully"})
-           
+            return res.status(400).json({ success: false, message: "Inavlid or Expired Code" })
+
+        }
+
+        user.isVerified = true;
+        user.verficationToken = undefined;
+        user.verficationTokenExpiresAt = undefined;
+        await user.save()
+        await WelcomeEmail(user.email, user.name)
+        return res.status(200).json({ success: true, message: "Email Verifed Successfully" })
+
     } catch (error) {
         console.log(error)
-        return res.status(400).json({success:false,message:"internal server error"})
+        return res.status(400).json({ success: false, message: "internal server error" })
     }
 }
 
-export {register,VerfiyEmail}
+export { register, VerfiyEmail }

@@ -1,4 +1,4 @@
-import transporter from './Email.confiq.js';
+import transporter from '../middlewares/Email.confiq.js';
 import { Verification_Email_Template, Welcome_Email_Template } from './EmailTemplate.js';
 
 export const  sendVerificationEamil = async (email, verficationCode) => {
