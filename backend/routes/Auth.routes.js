@@ -20,7 +20,6 @@ import { register, VerfiyEmail } from '../controllers/authControllers.js'
 // import { Reigster, VerfiyEmail } from '../controllers/Auth.js'
 
 const AuthRoutes=express.Router()
-
 AuthRoutes.post('/register',register)
 
 AuthRoutes.post('/verifyEmail',VerfiyEmail)
